@@ -16,7 +16,7 @@ module core_logic
 	output [DATA_WIDTH - 1 :0] out
 );
 	//CSR RAM space
-	reg [DATA_WIDTH - 1:0][DEPTH-1:0] csr;
+	reg [DATA_WIDTH - 1:0] csr[0:DEPTH - 1];
 	reg [ADDR_WIDTH - 1:0] addr;
 	reg	[1:0] op;
 	
