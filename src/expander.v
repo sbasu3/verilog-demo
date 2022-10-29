@@ -14,7 +14,6 @@ module expander(
 	wire [7:0] out;
 	wire rst;
 	wire rdy;
-	wire latch;
 
 spi_slave spi(	.ss(ss) , .clk(clk) , .mosi(mosi) , .miso(miso) ,
 				.data_in(data) , .rst(rst) ,.data_rdy(rdy) , .data_latch( latch) , .data_out (out) );
