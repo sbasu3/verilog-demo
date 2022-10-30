@@ -1,4 +1,7 @@
 `default_nettype none
+`include "csr.v"
+`include "spi_slave.v"
+
 
 module expander_sbasu3(
 	input [7:0] io_in,
@@ -13,14 +16,14 @@ module expander_sbasu3(
 	wire mosi = io_in[5];
 
 	wire latch;
-	wire [7:0] data;
-	wire [7:0] out;
+	wire [7:0] spi_data_in;
+	wire [7:0] spi_data_out;
 	wire rdy;
 
 spi_slave spi(	.ss(ss) , .sclk(sclk) , .mosi(mosi) , .miso(miso) ,
-				.data_in(data) , .rst(rst) ,.data_rdy(rdy) , .data_latch( latch) , .data_out (out) );
+				.data_in(spi_data_in) , .rst(rst) ,.data_rdy(rdy) , .data_latch( latch) , .data_out (spi_data_out) );
 
-core_logic core(.data_in(out) , .data_out(data) ,  .data_rdy(rdy) , .rst(rst) , .data_latch(latch),
+core_logic core(.data_in(spi_data_out) , .data_out(spi_data_in) ,  .data_rdy(rdy) , .rst(rst) , .data_latch(latch),
 				.clk(clk_in) , .out(io_out) ); 
 
 
