@@ -59,14 +59,13 @@ module core_logic
 			portA		<= 	8'b00000000;
 			counter		<= 	16'd0;	
 		end
-	end
-
-
-	//GPIO Logic
-	always@(posedge clk) begin
-		if(csr[0][3])
+		else if(csr[0][3])
 			portA[7:0] <= csr[27][7:0];
+		else if(csr[0][2])
+			portA[0] <= ({csr[3],csr[4]} > counter);
 	end
+
+
 
 	//PWM Logic
 	always@(posedge clk  ) begin
@@ -75,10 +74,5 @@ module core_logic
 	end
 
 
-	always@(posedge clk) begin
-		//write others after syntax is verified
-		if(csr[0][2])
-			portA[0] <= ({csr[3],csr[4]} > counter);
-	end
 
 endmodule
