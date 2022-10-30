@@ -1,3 +1,5 @@
+`default_nettype none
+
 module core_logic 
 #(	parameter ADDR_WIDTH = 6,
 	parameter DATA_WIDTH = 8,
