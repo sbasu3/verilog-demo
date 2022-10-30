@@ -20,8 +20,6 @@ module tb_spi;
 
 	reg [7:0] uc_data;
     // instantiate the DUT
- 	spi_slave spi(.ss(ss) , .clk(clk) , .mosi(mosi) , .miso(miso) , .data_in(data) , .rst(rst) ,
-					.data_rdy(rdy) , .data_latch( latch) , .data_out (out) );
 
     // this part dumps the trace to a vcd file that can be viewed with GTKWave
     initial begin
