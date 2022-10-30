@@ -8,7 +8,7 @@ module core_logic
 	input [DATA_WIDTH - 1 :0] data_in,
 	output reg [DATA_WIDTH - 1 :0] data_out,
 	input data_rdy,
-	output reg rst,
+	input rst,
 	output reg data_latch,
 	//Inputs
 	input clk,
@@ -27,7 +27,7 @@ module core_logic
 
 	//GPIO
 	reg [DATA_WIDTH - 1:0] portA;
-
+ 	assign out = portA;
 	//PWM Controller
 	reg [ 2*DATA_WIDTH - 1:0] counter;
 
@@ -47,18 +47,15 @@ module core_logic
 		end
 	end 
 
-	//RESET Logic
-	always@(posedge clk ) begin
-		if(csr[0][0]) begin
-			rst <= 1'b1;
-			//rst_bar <= 1'b0;
-		end
-	end
 
 	always@(posedge clk) begin
 		if(rst) begin
-			rst <= 1'b0;
-			//rst_bar <= 1'b1;
+			data_out 	<= 	8'b00000000;
+			data_latch 	<= 	1'b0;
+			addr 		<=	6'b000000;
+			op			<=	2'b00;
+			portA		<= 	8'b00000000;
+			counter		<= 	16'd0;	
 		end
 	end
 
