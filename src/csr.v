@@ -61,16 +61,10 @@ module core_logic
 		end
 		else if(csr[0][3])
 			portA[7:0] <= csr[27][7:0];
-		else if(csr[0][2])
+		else if(csr[0][2]) begin
 			portA[0] <= ({csr[3],csr[4]} > counter);
-	end
-
-
-
-	//PWM Logic
-	always@(posedge clk  ) begin
-		if(csr[0][2])
 			counter <= counter + 1'b1;
+		end
 	end
 
 
