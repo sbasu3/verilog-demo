@@ -13,8 +13,8 @@ module tb (
 	input ss,
 	input sclk,
 	input mosi,
-	input miso,
-    output [7:0] out
+	output miso,
+    output [6:0] out
    );
 
     // this part dumps the trace to a vcd file that can be viewed with GTKWave
@@ -27,7 +27,8 @@ module tb (
     // wire up the inputs and outputs
     wire [7:0] inputs = {3'b0,mosi,sclk,ss,rst,clk};
     wire [7:0] outputs;
-    assign out = outputs[7:0];
+
+    assign out = {outputs[6:0],miso};
 
     // instantiate the DUT
         sbasu3_top DUT(

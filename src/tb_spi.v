@@ -41,10 +41,12 @@ module tb_spi;
 	task write_spi_byte;
 		input [7:0] byte;
 		begin
+			ss = 1'b0;
 			@(posedge sys_clk)
 			uc_data = byte;
 			#20
 			ss = 1'b1;
+			#2 {mosi,uc_data} = {uc_data,miso};
 			#160
 			ss = 1'b0;
 		end
@@ -58,6 +60,7 @@ module tb_spi;
 		sclk = 1'b0;
 		rst = 1'b0;
 		mosi = 1'b0;
+		ss = 1'b0;
 		#20;
 		rst = 1'b1;
 		#20;
@@ -82,7 +85,7 @@ module tb_spi;
 
 	always@(posedge sys_clk)
 	begin
-		if(ss)
+		if(!rst)
 			#10 sclk = ~sclk;
 		else
 			#1 sclk = 1'b0;
