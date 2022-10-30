@@ -34,7 +34,6 @@ documentation:
     - none
     - none
     - none
-    - none
   outputs:
     - MISO
     - PWM0/GPIO0         # a description of what the outputs do

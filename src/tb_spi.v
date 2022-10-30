@@ -27,10 +27,11 @@ module tb_spi;
 	assign lines_in[2] = ss;
 	assign lines_in[3] = sclk;
 	assign lines_in[4] = mosi;
-	assign lines_in[7:6] = 2'b00;
+	assign lines_in[7:5] = 3'b0;
 	//outputs
 
 	assign miso = lines_out[0];
+	wire sclk_en;
 
     // instantiate the DUT
 	sbasu3_top DUT(.io_in(lines_in) , .io_out(lines_out));
@@ -89,6 +90,8 @@ module tb_spi;
 
     end
 
+	assign sclk_en = sclk & ss;
+	
 	always 
 		begin
 		sys_clk = 1'b0;
@@ -105,7 +108,7 @@ module tb_spi;
 			#1 sclk = 1'b0;
 	end
 
-	always@(posedge sys_clk or ss) begin
+	always@(posedge sclk_en) begin
 		if(ss)
 			{mosi,uc_data} <= {uc_data,miso};
 	end
