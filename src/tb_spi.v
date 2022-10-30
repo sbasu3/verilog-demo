@@ -18,22 +18,22 @@ module tb_spi;
 	wire [7:0] lines_in;
 	wire [7:0] lines_out;
 
-	reg clk;
+	reg sys_clk;
 	reg rst;
 	reg [7:0] uc_data;
 	//inputs
-	assign lines_in[0] = ss;
-	assign lines_in[1] = sclk;
-	assign miso = lines_in[2];
-	assign lines_in[3] = mosi;
-	assign lines_in[4] = clk;
-	assign lines_in[5] = rst;
+	assign lines_in[0] = sys_clk;
+	assign lines_in[1] = rst;
+	assign lines_in[2] = ss;
+	assign lines_in[3] = sclk;
+	assign lines_in[4] = mosi;
 	assign lines_in[7:6] = 2'b00;
 	//outputs
 
+	assign miso = lines_out[0];
 
     // instantiate the DUT
-	expander_sbasu3 DUT(.io_in(lines_in) , .io_out(lines_out));
+	sbasu3_top DUT(.io_in(lines_in) , .io_out(lines_out));
     // this part dumps the trace to a vcd file that can be viewed with GTKWave
     initial begin
         $dumpfile ("tb_spi.vcd");
@@ -91,13 +91,13 @@ module tb_spi;
 
 	always 
 		begin
-		clk = 1'b0;
+		sys_clk = 1'b0;
 		#1;
-		clk = 1'b1;
+		sys_clk = 1'b1;
 		#1;
 		end
 
-	always@(posedge clk)
+	always@(posedge sys_clk)
 	begin
 		if(ss)
 			#10 sclk = ~sclk;
@@ -105,7 +105,7 @@ module tb_spi;
 			#1 sclk = 1'b0;
 	end
 
-	always@(posedge clk or ss) begin
+	always@(posedge sys_clk or ss) begin
 		if(ss)
 			{mosi,uc_data} <= {uc_data,miso};
 	end

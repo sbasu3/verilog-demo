@@ -5,22 +5,28 @@ module spi_slave(
 	input sclk,
 	input mosi,
 	output reg miso,
-	input [7:0] data_in,
-	output [7:0] data_out,
+	input [7:0] spi_data_in,
+	output [7:0] spi_data_out,
 	output  reg data_rdy,
 	input rst,
-	input data_latch
+	input data_latch,
+	input sys_clk
 );
 
 	reg [3:0] bit_cnt;
 	reg [7:0] spi_register;
+	wire clk_en;
 
-	always@(posedge rst) 
+	assign clk_en = ss & sclk &  !rst;
+
+	always@(posedge sys_clk) 
 	begin
-		bit_cnt <= 4'b0;
-		spi_register	<= 8'b0;
-		miso	<= 1'b0;
-		data_rdy <= 1'b0;
+		if(rst) begin
+			bit_cnt <= 4'b0;
+			spi_register	<= 8'b0;
+			miso	<= 1'b0;
+			data_rdy <= 1'b0;
+		end
 	end
 
 	always@(negedge ss)
@@ -28,24 +34,27 @@ module spi_slave(
 		bit_cnt	<= 4'b0;
 	end
 
-	always@(posedge sclk) 
+	always@(posedge clk_en) 
 	begin
-		if(ss) begin
 			{miso,spi_register}	<= {spi_register,mosi};
 			bit_cnt 	<=	bit_cnt + 1'b1;
-		end
 	end
 	
-	always@(posedge bit_cnt[3])
-		data_rdy <= 1'b1;
+	always@(*)
+	begin
+		if(bit_cnt == 4'b1000)
+			data_rdy = 1'b1;
+		else
+			data_rdy = 1'b0;
+	end
 	
 	always@(posedge data_latch) 
 	begin
-		spi_register	<= data_in;
+		spi_register	<= spi_data_in;
 		data_rdy		<= 1'b0;
 	end
 
-	assign data_out[7:0] = spi_register[7:0];
+	assign spi_data_out[7:0] = spi_register[7:0];
 
 
 endmodule 

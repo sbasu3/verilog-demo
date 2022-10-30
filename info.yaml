@@ -6,7 +6,7 @@ project:
     - expander.v
     - csr.v
     - spi_slave.v
-  top_module:  "expander_sbasu3"      # put the name of your top module here, make it unique by prepending your github username
+  top_module:  "sbasu3_top"      # put the name of your top module here, make it unique by prepending your github username
 
 # As everyone will have access to all designs, try to make it easy for someone new to your design to know what
 # it does and how to operate it.
@@ -31,11 +31,12 @@ documentation:
     - SS
     - SCLK
     - MOSI
-    - MISO
+    - none
     - none
     - none
     - none
   outputs:
+    - MISO
     - PWM0/GPIO0         # a description of what the outputs do
     - PWM1/GPIO1
     - PWM2/GPIO2
@@ -43,5 +44,4 @@ documentation:
     - PWM4/GPIO4
     - PWM5/GPIO5
     - PWM6/GPIO6
-    - PWM7/GPIO7
 
