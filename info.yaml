@@ -26,11 +26,12 @@ documentation:
   clock_hz:     10000       # Clock frequency in Hz (if required)
   picture:      ""      # relative path to a picture in your repository
   inputs:               # a description of what the inputs do
+    - SYS_CLK
+    - RST
     - SS
     - SCLK
     - MOSI
     - MISO
-    - SYS_CLK
     - none
     - none
     - none

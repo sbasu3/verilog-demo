@@ -5,12 +5,12 @@ module expander(
 	output [7:0] io_out
 );
 
-	wire ss = io_in[0];
-	wire sclk = io_in[1];
-	wire miso = io_in[2];
-	wire mosi = io_in[3];
-	wire clk_in = io_in[4];
-	wire rst = io_in[5];
+	wire clk_in = io_in[0];
+	wire rst = io_in[1];
+	wire ss = io_in[2];
+	wire sclk = io_in[3];
+	wire miso = io_in[4];
+	wire mosi = io_in[5];
 
 	wire latch;
 	wire [7:0] data;
