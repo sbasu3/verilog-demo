@@ -1,3 +1,5 @@
+`default_nettype none
+
 module expander(
 	input [7:0] io_in,
 	output [7:0] io_out
