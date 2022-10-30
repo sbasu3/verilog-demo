@@ -25,12 +25,12 @@ module tb (
     end
 
     // wire up the inputs and outputs
-    wire [7:0] inputs = {2'b0, rst,clk,,mosi,miso,sclk,ss};
+    wire [7:0] inputs = {3'b0,mosi,sclk,ss,rst,clk};
     wire [7:0] outputs;
     assign out = outputs[7:0];
 
     // instantiate the DUT
-        expander DUT(
+        sbasu3_top DUT(
 		.io_in  (inputs),
         .io_out (outputs)
         );
