@@ -8,7 +8,7 @@ module core_logic
 	input [DATA_WIDTH - 1 :0] data_in,
 	output reg [DATA_WIDTH - 1 :0] data_out,
 	input data_rdy,
-	output rst,
+	output reg rst,
 	output reg data_latch,
 	//Inputs
 	input clk,
@@ -21,8 +21,8 @@ module core_logic
 	reg	[1:0] op;
 	
 	//RESET 
-	reg rst;
-	reg rst_bar;	
+	//reg rst;
+	//reg rst_bar;	
 
 
 	//GPIO
@@ -51,14 +51,14 @@ module core_logic
 	always@(posedge clk ) begin
 		if(csr[0][0]) begin
 			rst <= 1'b1;
-			rst_bar <= 1'b0;
+			//rst_bar <= 1'b0;
 		end
 	end
 
 	always@(posedge clk) begin
 		if(rst) begin
 			rst <= 1'b0;
-			rst_bar <= 1'b1;
+			//rst_bar <= 1'b1;
 		end
 	end
 
