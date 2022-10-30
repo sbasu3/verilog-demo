@@ -1,6 +1,6 @@
 `default_nettype none
 
-module expander(
+module expander_sbasu3(
 	input [7:0] io_in,
 	output [7:0] io_out
 );

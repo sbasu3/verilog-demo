@@ -33,7 +33,7 @@ module tb_spi;
 
 
     // instantiate the DUT
-	expander DUT(.io_in(lines_in) , .io_out(lines_out));
+	expander_sbasu3 DUT(.io_in(lines_in) , .io_out(lines_out));
     // this part dumps the trace to a vcd file that can be viewed with GTKWave
     initial begin
         $dumpfile ("tb_spi.vcd");
