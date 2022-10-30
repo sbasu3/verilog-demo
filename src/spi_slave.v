@@ -36,8 +36,8 @@ module spi_slave(
 
 	always@(posedge clk_en) 
 	begin
-			{miso,spi_register}	<= {spi_register,mosi};
-			bit_cnt 	<=	bit_cnt + 1'b1;
+			{miso,spi_register}	= {spi_register,mosi};
+			bit_cnt 	=	bit_cnt + 1'b1;
 	end
 	
 	always@(*)

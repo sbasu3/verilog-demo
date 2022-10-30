@@ -1,5 +1,5 @@
 `default_nettype none
-`timescale 1us/1ns
+`timescale 1ns/1ps
 
 /*
 this testbench just instantiates the module and makes some convenient wires
@@ -36,6 +36,22 @@ module tb_spi;
     // instantiate the DUT
 	sbasu3_top DUT(.io_in(lines_in) , .io_out(lines_out));
     // this part dumps the trace to a vcd file that can be viewed with GTKWave
+
+
+	task write_spi_byte;
+		input [7:0] byte;
+		begin
+			@(posedge sys_clk)
+			uc_data = byte;
+			#20
+			ss = 1'b1;
+			#160
+			ss = 1'b0;
+		end
+	endtask
+		
+
+
     initial begin
         $dumpfile ("tb_spi.vcd");
         $dumpvars;
@@ -46,48 +62,12 @@ module tb_spi;
 		rst = 1'b1;
 		#20;
 		rst = 1'b0;
-		uc_data = 8'b10000000; //RESET CMD
-		//latch = 1'b0;
-		#20;
-		ss = 1'b1;
-		#170;
-		ss = 1'b0;
-
-		uc_data = 8'b00000000; //RESET DATA
-		//latch = 1'b0;
-		#20;
-		ss = 1'b1;
-		#170;
-		ss = 1'b0;
-
-		uc_data = 8'b10000000; //MODE CMD
-		//latch = 1'b0;
-		#20;
-		ss = 1'b1;
-		#170;
-		ss = 1'b0;
-
-		uc_data = 8'b0001000; //MODE DATA
-		//latch = 1'b0;
-		#20;
-		ss = 1'b1;
-		#170;
-		ss = 1'b0;
-
-		uc_data = 8'b10011011; //GPIO WRITE CMD
-		//latch = 1'b0;
-		#20;
-		ss = 1'b1;
-		#170;
-		ss = 1'b0;
-
-		uc_data = 8'b10101010; //GPIO WRITE DATA
-		//latch = 1'b0;
-		#20;
-		ss = 1'b1;
-		#170;
-		ss = 1'b0;
-
+		#1 write_spi_byte(8'b10000000); //RESET CMD
+		#1 write_spi_byte(8'b00000000); //RESET DATA
+		#1 write_spi_byte(8'b10000000); //MODE CMD
+		#1 write_spi_byte(8'b00010000); //MODE DATA
+		#1 write_spi_byte(8'b10011011); //GPIO WRITE CMD
+		#1 write_spi_byte(8'b10101010); //GPIO WRITE DATA
     end
 
 	assign sclk_en = sclk & ss;
@@ -109,8 +89,7 @@ module tb_spi;
 	end
 
 	always@(posedge sclk_en) begin
-		if(ss)
-			{mosi,uc_data} <= {uc_data,miso};
+		{mosi,uc_data} <= {uc_data,miso};
 	end
 
 endmodule
