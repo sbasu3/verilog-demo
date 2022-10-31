@@ -29,7 +29,7 @@ module spi_slave(
 
 	assign clk_en = ss & sclk &  !rst;
 
-	always @(posedge sys_clk or rst)
+	always @(posedge sys_clk or posedge rst)
 	begin
     if(rst) // go to state reset if reset
         begin
