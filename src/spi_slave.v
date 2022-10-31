@@ -29,7 +29,7 @@ module spi_slave(
 
 	assign clk_en = ss & sclk &  !rst;
 
-	always @(posedge sys_clk, rst)
+	always @(posedge sys_clk or rst)
 	begin
     if(rst) // go to state reset if reset
         begin
@@ -41,7 +41,7 @@ module spi_slave(
         end
 	end
 	
-	always@(state,rst,ss,posedge clk_en,data_latch)
+	always@(state or rst or ss or posedge clk_en or data_latch)
 	begin
 		state_next = state;
 
