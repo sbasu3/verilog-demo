@@ -13,33 +13,84 @@ module spi_slave(
 	input sys_clk
 );
 
+
+	localparam [1:0] 
+		reset = 2'b00,
+		idle = 2'b01,
+		active = 2'b10,
+		load = 2'b11;
+
+
+	reg [1:0] state, state_next;
+
 	reg [3:0] bit_cnt;
 	reg [7:0] spi_register;
 	wire clk_en;
 
 	assign clk_en = ss & sclk &  !rst;
 
-	always@(posedge sys_clk) 
+	always @(posedge sys_clk, rst)
 	begin
-		if(rst) begin
-			bit_cnt <= 4'b0;
-			spi_register	<= 8'b0;
-			miso	<= 1'b0;
-			data_rdy <= 1'b0;
-		end
-	end
-
-	always@(negedge ss)
-	begin
-		bit_cnt	<= 4'b0;
-	end
-
-	always@(posedge clk_en) 
-	begin
-			{miso,spi_register}	= {spi_register,mosi};
-			bit_cnt 	=	bit_cnt + 1'b1;
+    if(rst) // go to state reset if reset
+        begin
+        state <= reset;
+        end
+    else // otherwise update the states
+        begin
+        state <= state_next;
+        end
 	end
 	
+	always@(state,rst,ss,posedge clk_en,data_latch)
+	begin
+		state_next = state;
+
+		case(state)
+			reset:
+				if(rst) begin
+					state_next = reset;
+					spi_register = 8'b0;
+					bit_cnt = 4'b0;
+					data_rdy = 1'b0;
+					miso = 1'b0;
+					
+				end else if(ss) begin
+					state_next = active;
+				end else 
+					state_next = idle;
+			idle:
+				if(rst)
+					state_next = reset;
+				else if(ss)
+					state_next = active;
+				else if(data_latch)
+					state_next = load;
+				else
+					state_next = idle;
+
+			active:
+				if(rst)
+					state_next = reset;
+				else if(!ss) begin 
+					state_next = idle;
+					bit_cnt = 4'b0;
+				end else if(clk_en) begin
+					state_next = active;
+					{miso,spi_register} = {spi_register,miso};
+					bit_cnt = bit_cnt + 1'b1;
+				end
+			load:
+				if(rst)
+					state_next = reset;
+				else if(!ss) begin
+					state_next = idle;
+					spi_register = spi_data_in;
+					data_rdy = 1'b0;
+				end else
+					state_next = load;
+		endcase
+	end
+
 	always@(*)
 	begin
 		if(bit_cnt == 4'b1000)
@@ -48,12 +99,6 @@ module spi_slave(
 			data_rdy = 1'b0;
 	end
 	
-	always@(posedge data_latch) 
-	begin
-		spi_register	<= spi_data_in;
-		data_rdy		<= 1'b0;
-	end
-
 	assign spi_data_out[7:0] = spi_register[7:0];
 
 
