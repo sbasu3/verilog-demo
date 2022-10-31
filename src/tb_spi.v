@@ -31,7 +31,6 @@ module tb_spi;
 	//outputs
 
 	assign miso = lines_out[0];
-	wire sclk_en;
 
     // instantiate the DUT
 	sbasu3_top DUT(.io_in(lines_in) , .io_out(lines_out));
@@ -41,14 +40,29 @@ module tb_spi;
 	task write_spi_byte;
 		input [7:0] byte;
 		begin
-			ss = 1'b0;
 			@(posedge sys_clk)
-			uc_data = byte;
-			#20
-			ss = 1'b1;
-			#2 {mosi,uc_data} = {uc_data,miso};
-			#160
 			ss = 1'b0;
+			uc_data = byte;
+			#1;
+			ss = 1'b1;
+			{mosi,uc_data} = {uc_data,miso};
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#10 sclk = ~sclk;
+			#1 ss = 1'b0;
 		end
 	endtask
 		
@@ -65,15 +79,14 @@ module tb_spi;
 		rst = 1'b1;
 		#20;
 		rst = 1'b0;
-		#1 write_spi_byte(8'b10000000); //RESET CMD
-		#1 write_spi_byte(8'b00000000); //RESET DATA
-		#1 write_spi_byte(8'b10000000); //MODE CMD
-		#1 write_spi_byte(8'b00010000); //MODE DATA
-		#1 write_spi_byte(8'b10011011); //GPIO WRITE CMD
-		#1 write_spi_byte(8'b10101010); //GPIO WRITE DATA
+		#5 write_spi_byte(8'b10000000); //RESET CMD
+		#5 write_spi_byte(8'b00000000); //RESET DATA
+		#5 write_spi_byte(8'b10000000); //MODE CMD
+		#5 write_spi_byte(8'b00010000); //MODE DATA
+		#5 write_spi_byte(8'b10011011); //GPIO WRITE CMD
+		#5 write_spi_byte(8'b10101010); //GPIO WRITE DATA
     end
 
-	assign sclk_en = sclk & ss;
 	
 	always 
 		begin
@@ -83,15 +96,8 @@ module tb_spi;
 		#1;
 		end
 
-	always@(posedge sys_clk)
-	begin
-		if(!rst)
-			#10 sclk = ~sclk;
-		else
-			#1 sclk = 1'b0;
-	end
 
-	always@(posedge sclk_en) begin
+	always@(posedge sclk) begin
 		{mosi,uc_data} <= {uc_data,miso};
 	end
 

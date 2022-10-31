@@ -27,32 +27,28 @@ module spi_slave(
 	reg [7:0] spi_register;
 	wire clk_en;
 
-	assign clk_en = ss & sclk &  !rst;
+	//assign clk_en = ss & sclk &  !rst;
 
 	always @(posedge sys_clk or posedge rst)
 	begin
     if(rst) // go to state reset if reset
-        begin
-        state <= reset;
-        end
+        state = reset;
     else // otherwise update the states
-        begin
-        state <= state_next;
-        end
+        state = state_next;
 	end
 	
-	always@(state or rst or ss or posedge clk_en or data_latch)
+	always@(state or ss or posedge sclk or posedge data_latch)
 	begin
 		state_next = state;
 
 		case(state)
 			reset:
 				if(rst) begin
-					state_next = reset;
-					spi_register = 8'b0;
-					bit_cnt = 4'b0;
-					data_rdy = 1'b0;
-					miso = 1'b0;
+					state_next <= reset;
+					spi_register <= 8'b0;
+					bit_cnt <= 4'b0;
+					data_rdy <= 1'b0;
+					miso <= 1'b0;
 					
 				end else if(ss) begin
 					state_next = active;
@@ -74,18 +70,18 @@ module spi_slave(
 				else if(!ss) begin 
 					state_next = idle;
 					bit_cnt = 4'b0;
-				end else if(clk_en) begin
-					state_next = active;
-					{miso,spi_register} = {spi_register,miso};
-					bit_cnt = bit_cnt + 1'b1;
+				end else if(sclk) begin
+					state_next <= active;
+					{miso,spi_register} <= {spi_register,mosi};
+					bit_cnt <= bit_cnt + 1'b1;
 				end
 			load:
 				if(rst)
 					state_next = reset;
 				else if(!ss) begin
-					state_next = idle;
-					spi_register = spi_data_in;
-					data_rdy = 1'b0;
+					state_next <= idle;
+					spi_register <= spi_data_in;
+					data_rdy <= 1'b0;
 				end else
 					state_next = load;
 		endcase
