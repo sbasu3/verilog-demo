@@ -5,7 +5,7 @@ module pwm(
 	input rd,
 	inout [15:0] data,
 	input [14:0] counter,
-	output pwm
+	output pwm_out
 );
 
 
@@ -28,7 +28,7 @@ module pwm(
 	assign set_value = csr[13:0];
 	assign data = data_reg;
 	
-	assign pwm = en & ( set_value > counter);
+	assign pwm_out = en & ( set_value > counter);
 	
 	always @(posedge sys_clk or posedge rst)
 	begin

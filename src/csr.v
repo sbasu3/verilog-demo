@@ -115,5 +115,5 @@ module core_logic
 		endcase
 	end
 	
-	pwm p0(.rst(rst),.sys_clk(sys_clk),.data(pwm_data),.counter(counter),.pwm(chip_out[0]),.cs(pwm0_cs),.rd(pwm_rd));
+	pwm p0(.rst(rst),.sys_clk(sys_clk),.data(pwm_data),.counter(counter),.pwm_out(chip_out[0]),.cs(pwm0_cs),.rd(pwm_rd));
 endmodule
