@@ -1,6 +1,5 @@
 `default_nettype none
 
-`include "pwm.v"
 
 module core_logic 
 (
