@@ -1,6 +1,6 @@
 `default_nettype none
-//`include "csr.v"
-//`include "spi_slave.v"
+`include "csr.v"
+`include "spi_slave.v"
 
 
 module sbasu3_top(
