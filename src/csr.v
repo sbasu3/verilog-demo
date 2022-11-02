@@ -42,7 +42,7 @@ module core_logic
 
 
 
-	always@(posedge sys_clk, rst)
+	always@(posedge sys_clk or rst)
 	begin
 		if(rst) begin
 			state = reset;
