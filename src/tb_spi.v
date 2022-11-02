@@ -71,12 +71,12 @@ module tb_spi;
 		rst = 1'b1;
 		#20;
 		rst = 1'b0;
-		#1 write_spi_byte(8'b10000000); //RESET CMD
-		#170 write_spi_byte(8'b00000000); //RESET DATA
-		#170 write_spi_byte(8'b10000000); //MODE CMD
-		#170 write_spi_byte(8'b00010000); //MODE DATA
-		#170 write_spi_byte(8'b10011011); //GPIO WRITE CMD
-		#170 write_spi_byte(8'b10101010); //GPIO WRITE DATA
+		#1 write_spi_byte(8'b00000000); // WRITE PWM0 
+		#170 write_spi_byte(8'b00001000);
+		#170 write_spi_byte(8'b00001000);
+		#170 write_spi_byte(8'b10000000);//READ PWM0
+		#170 write_spi_byte(8'bxxxxxxxx);
+		#170 write_spi_byte(8'bxxxxxxxx);
 		#1200 $finish();
     end
 

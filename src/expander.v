@@ -26,8 +26,8 @@ module sbasu3_top(
 	spi_slave spi(	.ss(ss) , .sclk(sclk) , .mosi(mosi) , .miso(miso) , .sys_clk(clk_in),
 				.spi_data_in(spi_data_in) , .rst(rst) ,.data_rdy(rdy) , .data_latch( latch) , .spi_data_out (spi_data_out) );
 
-//	core_logic core(.data_in(spi_data_out) , .data_out(spi_data_in) ,  .data_rdy(rdy) , .rst(rst) , .data_latch(latch),
-//				.clk(clk_in) , .out(io_out) ); 
+	core_logic core(.data_in(spi_data_out) , .data_out(spi_data_in) ,  .data_rdy(rdy) , .rst(rst) , .data_latch(latch),
+				.sys_clk(clk_in) , .chip_out(io_out[7:1]) ); 
 
 
 endmodule

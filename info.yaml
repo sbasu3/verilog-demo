@@ -5,6 +5,8 @@ project:
   source_files:        # If using an HDL, set wokwi_id as 0 and uncomment and list your source files here. Source files must be in ./src
     - expander.v
     - spi_slave.v
+    - csr.v
+    - pwm.v
   top_module:  "sbasu3_top"      # put the name of your top module here, make it unique by prepending your github username
 
 # As everyone will have access to all designs, try to make it easy for someone new to your design to know what

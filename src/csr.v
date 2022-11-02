@@ -1,72 +1,117 @@
 `default_nettype none
 
 module core_logic 
-#(	parameter ADDR_WIDTH = 6,
-	parameter DATA_WIDTH = 8,
-	parameter DEPTH = 32
-)
 (
 	//SPI block i/f
-	input [DATA_WIDTH - 1 :0] data_in,
-	output reg [DATA_WIDTH - 1 :0] data_out,
+	input [7:0] data_in,
+	output reg [7:0] data_out,
 	input data_rdy,
 	input rst,
 	output reg data_latch,
-	//Inputs
-	input clk,
+	input sys_clk,
 	//Outputs
-	output [DATA_WIDTH - 1 :0] out
+	output [6 :0] chip_out
 );
-	//CSR RAM space
-	reg [DATA_WIDTH - 1:0] csr[0:DEPTH - 1];
-	reg [ADDR_WIDTH - 1:0] addr;
-	reg	[1:0] op;
+
+	localparam [2:0]
+		reset = 3'b0,
+		set_addr = 3'b001,
+		set_data_0 = 3'b010,
+		set_data_1 = 3'b011,
+		get_data_0 = 3'b100,
+		get_data_1 = 3'b101,
+		data_idle = 3'b110;
+
+	reg [2:0] pwm_addr;
+	reg [1:0] pwm_local;
+	reg pwm_rd;
+	wire pwm0_cs;
+	wire [15:0] pwm_data;
+
+	reg [14:0] counter;
+
 	
-	//RESET 
-	//reg rst;
-	//reg rst_bar;	
+	reg [7:0] data0,data1;
+
+	reg [1:0] data_cnt;
+
+	reg [2:0] state,state_next;
+	assign pwm0_cs = (pwm_addr == 3'b0);
 
 
-	//GPIO
-	reg [DATA_WIDTH - 1:0] portA;
- 	assign out = portA;
-	//PWM Controller
-	reg [ 2*DATA_WIDTH - 1:0] counter;
 
-	//Read/Write to CSR
-	always@(posedge clk) begin
-		if(data_latch)
-			{op,addr} <= data_in;
-	end
-
-
-	always@(posedge clk) begin
-		if(op[1])
-			csr[addr] <= data_in;
-		else if ( op[0] )	begin//possible bug introduced
-			data_out <= csr[addr];
-			data_latch <= 1'b1;
-		end
-	end 
-
-
-	always@(posedge clk) begin
+	always@(posedge sys_clk, rst)
+	begin
 		if(rst) begin
-			data_out 	<= 	8'b00000000;
-			data_latch 	<= 	1'b0;
-			addr 		<=	6'b000000;
-			op			<=	2'b00;
-			portA		<= 	8'b00000000;
-			counter		<= 	16'd0;	
-		end
-		else if(csr[0][3])
-			portA[7:0] <= csr[27][7:0];
-		else if(csr[0][2]) begin
-			portA[0] <= ({csr[3],csr[4]} > counter);
-			counter <= counter + 1'b1;
-		end
+			state = reset;
+			counter = 15'b0; 	
+		end else
+			begin
+				state = state_next;
+				counter = counter + 1'b1;
+			end
 	end
 
+	always@(posedge data_rdy)
+	begin
+		data_cnt = data_cnt + 1'b1;
+	end
 
+	always@(*)
+	begin
+		state_next = state;
 
+		case(state)
+			reset:
+				if(rst) begin
+					state_next = reset;
+					pwm_addr = 3'b111;
+					data0 = 8'b0;
+					data1 = 8'b0;
+					data_cnt = 2'b0;
+				end else if(data_rdy)
+					state_next = set_addr;
+			set_addr:
+			begin
+				pwm_addr = data_in[4:2];
+				pwm_local = data_in[1:0];
+				pwm_rd = data_in[7];
+				data_cnt = 2'b01;
+				if(data_rdy & pwm_rd)
+					state_next = set_data_0;
+				else if(data_rdy & !pwm_rd)
+					state_next = get_data_0;				
+			end
+			set_data_0:
+				if((data_cnt == 2'b01) & data_rdy) begin
+					data0 = data_in;
+					state_next = set_data_1;
+				end
+			set_data_1:
+				if((data_cnt == 2'b10) & data_rdy) begin
+					data1 = data_in;
+					//write data to pwm
+					state_next = data_idle;
+				end
+			get_data_0:
+				if((data_cnt == 2'b01) & data_rdy)
+				begin	
+					data_out = data0;
+					state_next = get_data_1;
+				end
+			get_data_1:
+				if((data_cnt == 2'b10) &  data_rdy)
+				begin	
+					data_out = data1;
+					state_next = data_idle;
+				end
+			data_idle:
+					if(!data_rdy)
+						data_cnt = 2'b0;
+					else
+						state_next = set_addr;
+		endcase
+	end
+	
+	pwm p0(.rst(rst),.sys_clk(sys_clk),.data(pwm_data),.counter(counter),.pwm(chip_out[0]),.cs(pwm0_cs),.rd(pwm_rd));
 endmodule
