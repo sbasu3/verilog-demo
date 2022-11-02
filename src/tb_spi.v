@@ -21,6 +21,9 @@ module tb_spi;
 	reg sys_clk;
 	reg rst;
 	reg [7:0] uc_data;
+
+	integer i;
+
 	//inputs
 	assign lines_in[0] = sys_clk;
 	assign lines_in[1] = rst;
@@ -43,25 +46,14 @@ module tb_spi;
 			@(posedge sys_clk)
 			ss = 1'b0;
 			uc_data = byte;
+			sclk = 0;
 			#1;
 			ss = 1'b1;
-			{mosi,uc_data} = {uc_data,miso};
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
-			#10 sclk = ~sclk;
+			for (i=0; i<8;i++) begin
+				{mosi,uc_data} = {uc_data,miso};
+				#10 sclk = ~sclk;
+				#10 sclk = ~sclk;
+			end
 			#1 ss = 1'b0;
 		end
 	endtask
@@ -79,12 +71,13 @@ module tb_spi;
 		rst = 1'b1;
 		#20;
 		rst = 1'b0;
-		#5 write_spi_byte(8'b10000000); //RESET CMD
-		#5 write_spi_byte(8'b00000000); //RESET DATA
-		#5 write_spi_byte(8'b10000000); //MODE CMD
-		#5 write_spi_byte(8'b00010000); //MODE DATA
-		#5 write_spi_byte(8'b10011011); //GPIO WRITE CMD
-		#5 write_spi_byte(8'b10101010); //GPIO WRITE DATA
+		#1 write_spi_byte(8'b10000000); //RESET CMD
+		#170 write_spi_byte(8'b00000000); //RESET DATA
+		#170 write_spi_byte(8'b10000000); //MODE CMD
+		#170 write_spi_byte(8'b00010000); //MODE DATA
+		#170 write_spi_byte(8'b10011011); //GPIO WRITE CMD
+		#170 write_spi_byte(8'b10101010); //GPIO WRITE DATA
+		#1200 $finish();
     end
 
 	
@@ -97,8 +90,5 @@ module tb_spi;
 		end
 
 
-	always@(posedge sclk) begin
-		{mosi,uc_data} <= {uc_data,miso};
-	end
 
 endmodule

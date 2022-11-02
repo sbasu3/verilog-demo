@@ -7,7 +7,7 @@ module spi_slave(
 	output reg miso,
 	input [7:0] spi_data_in,
 	output [7:0] spi_data_out,
-	output  reg data_rdy,
+	output data_rdy,
 	input rst,
 	input data_latch,
 	input sys_clk
@@ -45,11 +45,11 @@ module spi_slave(
 		case(state)
 			reset:
 				if(rst) begin
-					state_next <= reset;
-					spi_register <= 8'b0;
-					bit_cnt <= 4'b0;
-					data_rdy <= 1'b0;
-					miso <= 1'b0;
+					state_next = reset;
+					spi_register = 8'b0;
+					bit_cnt = 4'b0;
+					//data_rdy = 1'b0;
+					miso = 1'b0;
 					
 				end else if(ss) begin
 					state_next = active;
@@ -72,30 +72,23 @@ module spi_slave(
 					state_next = idle;
 					bit_cnt = 4'b0;
 				end else if(sclk) begin
-					state_next <= active;
-					{miso,spi_register} <= {spi_register,mosi};
-					bit_cnt <= bit_cnt + 1'b1;
+					state_next = active;
+					{miso,spi_register} = {spi_register,mosi};
+					bit_cnt = bit_cnt + 1'b1;
 				end
 			load:
 				if(rst)
 					state_next = reset;
 				else if(!ss) begin
-					state_next <= idle;
-					spi_register <= spi_data_in;
-					data_rdy <= 1'b0;
+					state_next = idle;
+					spi_register = spi_data_in;
+					//data_rdy = 1'b0;
 				end else
 					state_next = load;
 		endcase
 	end
 
-	always@(*)
-	begin
-		if(bit_cnt == 4'b1000)
-			data_rdy = 1'b1;
-		else
-			data_rdy = 1'b0;
-	end
-	
+	assign 	data_rdy = (bit_cnt == 4'b1000)? 1'b1:1'b0;
 	assign spi_data_out[7:0] = spi_register[7:0];
 
 
