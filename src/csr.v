@@ -46,11 +46,10 @@ module core_logic
 		if(rst) begin
 			state = reset;
 			counter = 15'b0; 	
-		end else
-			begin
-				state = state_next;
-				counter = counter + 1'b1;
-			end
+		end else begin
+			state = state_next;
+			counter = counter + 1'b1;
+		end
 	end
 
 	always@(posedge data_rdy or posedge rst)

@@ -37,7 +37,6 @@ module spi_slave(
         state = state_next;
 	end
 	
-	//always@(posedge state[0] or negedge state[0] or posedge state[1] or negedge state[1] or negedge ss or posedge ss or posedge sclk or posedge data_latch)
 	always@(*)
 	begin
 		state_next = state;
