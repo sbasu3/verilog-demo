@@ -53,9 +53,12 @@ module core_logic
 			end
 	end
 
-	always@(posedge data_rdy)
+	always@(posedge data_rdy or posedge rst)
 	begin
-		data_cnt = data_cnt + 1'b1;
+		if(rst | (state == data_idle) )
+			data_cnt = 1'b0;
+		else 
+			data_cnt = data_cnt + 1'b1;
 	end
 
 	always@(*)
@@ -69,7 +72,7 @@ module core_logic
 					pwm_addr = 3'b111;
 					data0 = 8'b0;
 					data1 = 8'b0;
-					data_cnt = 2'b0;
+					//data_cnt = 2'b0;
 				end else if(data_rdy)
 					state_next = set_addr;
 			set_addr:
@@ -77,7 +80,7 @@ module core_logic
 				pwm_addr = data_in[4:2];
 				pwm_local = data_in[1:0];
 				pwm_rd = data_in[7];
-				data_cnt = 2'b01;
+				//data_cnt = 2'b01;
 				if(data_rdy & pwm_rd)
 					state_next = set_data_0;
 				else if(data_rdy & !pwm_rd)
