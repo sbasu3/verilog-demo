@@ -52,7 +52,7 @@ module core_logic
 		end
 	end
 
-	always@(posedge data_rdy or posedge rst)
+	always@(negedge data_rdy)
 	begin
 		if(rst | (state == data_idle) )
 			data_cnt = 1'b0;
